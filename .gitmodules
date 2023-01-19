@@ -1,3 +1,3 @@
 [submodule "RocketSim"]
 	path = RocketSim
-	url = git@github.com:rpv-floriculture/RocketSim.git
+	url = https://github.com/rpv-floriculture/RocketSim.git
