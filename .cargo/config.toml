@@ -1,6 +1,6 @@
-[build]
-rustflags = [
-  "-Clinker=clang",
-  "-Clinker-plugin-lto",
-  "-Clink-arg=-fuse-ld=lld",
-]
+# [build]
+# rustflags = [
+#   "-Clinker=clang",
+#   "-Clinker-plugin-lto",
+#   "-Clink-arg=-fuse-ld=lld",
+# ]

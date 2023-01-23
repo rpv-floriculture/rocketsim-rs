@@ -1,9 +1,13 @@
 mod ball_state;
-mod game_state;
 mod car_state;
 mod constants;
+mod game_state;
 
-pub use self::{car_state::CarState, car_state::CarStateBuilder, ball_state::BallState, game_state::GameState};
+use std::mem::MaybeUninit;
+
+pub use self::{
+    ball_state::BallState, car_state::CarState, car_state::CarStateBuilder, game_state::GameState,
+};
 pub use constants::*;
 
 type ArenaRef = *const libc::c_void;
@@ -20,7 +24,18 @@ extern "C" {
     fn DestroyArena(arena: ArenaRef);
     fn AddCar(arena: ArenaRef, team: i32) -> u32;
     fn RemoveCar(arena: ArenaRef, carId: u32) -> bool;
-    fn Controls(arena: ArenaRef, carId: u32, throttle: f32, steer: f32, pitch: f32, yaw: f32, roll: f32, boost: bool, jump: bool, handbrake: bool) -> bool;
+    fn Controls(
+        arena: ArenaRef,
+        carId: u32,
+        throttle: f32,
+        steer: f32,
+        pitch: f32,
+        yaw: f32,
+        roll: f32,
+        boost: bool,
+        jump: bool,
+        handbrake: bool,
+    ) -> bool;
     fn GetCarState(arena: ArenaRef, carId: u32, target: *mut CarState) -> bool;
     fn SetCarState(arena: ArenaRef, carId: u32, target: *mut CarState) -> bool;
     fn GetBallState(arena: ArenaRef, target: *mut BallState) -> bool;
@@ -58,37 +73,63 @@ impl Arena {
         }
     }
 
-    pub fn controls(&self, car_id: u32, throttle: f32, steer: f32, pitch: f32, yaw: f32, roll: f32, boost: bool, jump: bool, handbrake: bool) -> bool {
-        unsafe { Controls(self._ref, car_id, throttle, steer, pitch, yaw, roll, boost, jump, handbrake) }
+    pub fn controls(
+        &mut self,
+        car_id: u32,
+        throttle: f32,
+        steer: f32,
+        pitch: f32,
+        yaw: f32,
+        roll: f32,
+        boost: bool,
+        jump: bool,
+        handbrake: bool,
+    ) -> bool {
+        unsafe {
+            Controls(
+                self._ref, car_id, throttle, steer, pitch, yaw, roll, boost, jump, handbrake,
+            )
+        }
     }
 
-    pub fn get_car_state(&self, car_id: u32, target: *mut CarState) -> bool {
-        unsafe { GetCarState(self._ref, car_id, target) }
+    pub fn get_car_state(&self, car_id: u32) -> Option<CarState> {
+        unsafe {
+            let mut state = MaybeUninit::uninit();
+            if GetCarState(self._ref, car_id, state.as_mut_ptr()) {
+                Some(state.assume_init())
+            } else {
+                None
+            }
+        }
     }
 
-    pub fn set_car_state(&self, car_id: u32, target: *mut CarState) -> bool {
-        unsafe { SetCarState(self._ref, car_id, target) }
+    pub fn set_car_state(&mut self, car_id: u32, mut target: CarState) -> bool {
+        unsafe { SetCarState(self._ref, car_id, &mut target as *mut CarState) }
     }
 
-    pub fn get_ball_state(&self, target: *mut BallState) -> bool {
-        unsafe { GetBallState(self._ref, target) }
+    pub fn get_ball_state(&self) -> Option<BallState> {
+        unsafe {
+            let mut state = MaybeUninit::uninit();
+            if GetBallState(self._ref, state.as_mut_ptr()) {
+                Some(state.assume_init())
+            } else {
+                None
+            }
+        }
     }
 
-    pub fn set_ball_state(&self, target: *mut BallState) -> bool {
-        unsafe { SetBallState(self._ref, target) }
+    pub fn set_ball_state(&mut self, mut target: BallState) -> bool {
+        unsafe { SetBallState(self._ref, &mut target as *mut BallState) }
     }
 
     pub fn get_game_state(&self) -> GameState {
-        let mut car_states = Vec::new();
-        let mut ball_state = BallState::default();
+        let car_states = self
+            .car_ids
+            .iter()
+            .map(|id| self.get_car_state(*id).unwrap())
+            .collect();
 
-        for car_id in &self.car_ids {
-            let mut car_state = CarState::default();
-            self.get_car_state(*car_id, &mut car_state);
-            car_states.push(car_state);
-        }
-
-        self.get_ball_state(&mut ball_state);
+        let ball_state = self.get_ball_state().unwrap();
 
         GameState {
             car_states,
@@ -96,7 +137,7 @@ impl Arena {
         }
     }
 
-    pub fn step(&self, ticks_to_simulate: i32) -> bool {
+    pub fn step(&mut self, ticks_to_simulate: i32) -> bool {
         unsafe { Step(self._ref, ticks_to_simulate) }
     }
 }
@@ -118,10 +159,7 @@ mod tests {
     fn test_arena() {
         let mut arena = Arena::new(GameMode::Soccar);
         let car_id = arena.add_car(Team::Blue);
-        let mut car_state = CarState::default();
-        let mut ball_state = BallState::default();
-
-        arena.get_car_state(car_id, &mut car_state);
+        let car_state = arena.get_car_state(car_id);
         println!("Car state: {:?}", car_state);
         arena.controls(car_id, 1.0, 0.0, 0.0, 0.0, 0.0, false, false, false);
 
@@ -132,13 +170,19 @@ mod tests {
             arena.step(STRIDE.into());
         }
         let elapsed = now.elapsed();
-        arena.get_car_state(car_id, &mut car_state);
+        let car_state = arena.get_car_state(car_id);
         println!("Car state: {:?}", car_state);
-        arena.get_ball_state(&mut ball_state);
+        let ball_state = arena.get_ball_state();
         println!("Ball state: {:?}", ball_state);
         let game_state = arena.get_game_state();
         println!("Game state: {:?}", game_state);
         println!("Total steps: {}", STEPS * STRIDE);
-        println!("Steps per second: {}", ((STEPS as f64) * (STRIDE as f64)) / elapsed.as_secs_f64());
+        println!(
+            "Steps per second: {}",
+            ((STEPS as f64) * (STRIDE as f64)) / elapsed.as_secs_f64()
+        );
+
+        arena.remove_car(car_id);
+        arena.step(1);
     }
 }
