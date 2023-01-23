@@ -1,11 +1,23 @@
+use std::env;
+
 fn main() {
-    cc::Build::new()
+    let mut build = cc::Build::new();
+
+    build
         .compiler("clang++")
         .cpp(true)
         .flag("-std=c++20")
         .static_flag(true)
-        .use_plt(false)
-        .flag("-flto=thin")
+        .use_plt(false);
+
+    match env::var("PROFILE").unwrap().as_str() {
+        "release" => {
+            build.flag("-flto=thin");
+        }
+        _ => (),
+    }
+
+    build
         .define("BT_USE_SSE", None)
         .define("BT_USE_SSE_IN_API", None)
         .define("BT_USE_SIMD_VECTOR3", None)
