@@ -8,7 +8,8 @@ fn main() {
         .cpp(true)
         .flag("-std=c++20")
         .static_flag(true)
-        .use_plt(false);
+        .use_plt(false)
+        .flag("-ffast-math");
 
     match env::var("PROFILE").unwrap().as_str() {
         "release" => {
@@ -16,12 +17,12 @@ fn main() {
         }
         _ => (),
     }
+    println!("cargo:rerun-if-env-changed=PROFILE");
 
     build
         .define("BT_USE_SSE", None)
         .define("BT_USE_SSE_IN_API", None)
         .define("BT_USE_SIMD_VECTOR3", None)
-        .define("BT_THREADSAFE", Some("1"))
         .flag("--include=xmmintrin.h")
         .file("RocketSim/libsrc/bullet3-3.24/btBulletCollisionAll.cpp")
         .file("RocketSim/libsrc/bullet3-3.24/btBulletDynamicsAll.cpp")
