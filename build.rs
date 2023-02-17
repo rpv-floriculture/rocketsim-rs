@@ -30,6 +30,7 @@ fn main() {
         .file("RocketSim/src/Math/Math.cpp")
         .file("RocketSim/src/Sim/Arena/Arena.cpp")
         .file("RocketSim/src/Sim/Ball/Ball.cpp")
+        .file("RocketSim/src/Sim/BoostPad/BoostPad.cpp")
         .file("RocketSim/src/Sim/btVehicleRL/btVehicleRL.cpp")
         .file("RocketSim/src/Sim/Car/Car.cpp")
         .file("RocketSim/src/Sim/Car/CarConfig/CarConfig.cpp")
