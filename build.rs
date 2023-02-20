@@ -27,6 +27,7 @@ fn main() {
         .file("RocketSim/libsrc/bullet3-3.24/btBulletCollisionAll.cpp")
         .file("RocketSim/libsrc/bullet3-3.24/btBulletDynamicsAll.cpp")
         .file("RocketSim/libsrc/bullet3-3.24/btLinearMathAll.cpp")
+        .file("RocketSim/src/BulletLink.cpp")
         .file("RocketSim/src/Math/Math.cpp")
         .file("RocketSim/src/Sim/Arena/Arena.cpp")
         .file("RocketSim/src/Sim/Ball/Ball.cpp")
