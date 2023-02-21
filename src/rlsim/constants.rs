@@ -3,7 +3,7 @@ pub const SOCCAR: i32 = 0;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub enum GameMode {
-    Soccar
+    Soccar,
 }
 
 impl TryFrom<i32> for GameMode {
@@ -32,10 +32,10 @@ impl Default for GameMode {
 }
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Team {
     Blue,
-    Orange
+    Orange,
 }
 
 impl TryFrom<i32> for Team {
