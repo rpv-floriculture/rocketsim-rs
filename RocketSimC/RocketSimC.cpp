@@ -81,32 +81,29 @@ extern "C" {
 			auto carState = car->GetState();
 			target->team = car->team;
 			target->id = car->id;
-			target->pos_x = carState.pos.x();
-			target->pos_y = carState.pos.y();
-			target->pos_z = carState.pos.z();
-			target->yaw = carState.angles.yaw;
-			target->pitch = carState.angles.pitch;
-			target->roll = carState.angles.roll;
-			target->vel_x = carState.vel.x();
-			target->vel_y = carState.vel.y();
-			target->vel_z = carState.vel.z();
-			target->angVel_x = carState.angVel.x();
-			target->angVel_y = carState.angVel.y();
-			target->angVel_z = carState.angVel.z();
+			target->pos = carState.pos;
+			target->rot = carState.angles.ToMatrix();
+			target->vel = carState.vel;
+			target->angVel = carState.angVel;
 			target->isOnGround = carState.isOnGround;
 			target->hasJumped = carState.hasJumped;
 			target->hasDoubleJumped = carState.hasDoubleJumped;
 			target->hasFlipped = carState.hasFlipped;
-			target->lastRelDodgeTorque_x = carState.lastRelDodgeTorque.x();
-			target->lastRelDodgeTorque_y = carState.lastRelDodgeTorque.y();
-			target->lastRelDodgeTorque_z = carState.lastRelDodgeTorque.z();
+			target->lastRelDodgeTorque = carState.lastRelDodgeTorque;
 			target->jumpTimer = carState.jumpTimer;
 			target->flipTimer = carState.flipTimer;
 			target->isJumping = carState.isJumping;
 			target->airTimeSinceJump = carState.airTimeSinceJump;
 			target->boost = carState.boost;
+			target->timeSpentBoosting = carState.timeSpentBoosting;
 			target->isSupersonic = carState.isSupersonic;
+			target->supersonicTime = carState.supersonicTime;
 			target->handbrakeVal = carState.handbrakeVal;
+			target->isAutoFlipping = carState.isAutoFlipping;
+			target->autoFlipTimer = carState.autoFlipTimer;
+			target->autoFlipTorqueScale = carState.autoFlipTorqueScale;
+			target->hasContact = carState.worldContact.hasContact;
+			target->contactNormal = carState.worldContact.contactNormal;
 			return true;
 		}
 
@@ -119,32 +116,28 @@ extern "C" {
 				return false;
 			}
 			auto target = car->GetState();
-			target.pos.setX(source->pos_x);
-			target.pos.setY(source->pos_y);
-			target.pos.setZ(source->pos_z);
-			target.angles.yaw = source->yaw;
-			target.angles.pitch = source->pitch;
-			target.angles.roll = source->roll;
-			target.vel.setX(source->vel_x);
-			target.vel.setY(source->vel_y);
-			target.vel.setZ(source->vel_z);
-			target.angVel.setX(source->angVel_x);
-			target.angVel.setY(source->angVel_y);
-			target.angVel.setZ(source->angVel_z);
+			target.pos = source->pos;
+			target.angles = Angle(source->rot);
+			target.vel = source->vel;
+			target.angVel = source->angVel;
 			target.isOnGround = source->isOnGround;
 			target.hasJumped = source->hasJumped;
 			target.hasDoubleJumped = source->hasDoubleJumped;
 			target.hasFlipped = source->hasFlipped;
-			target.lastRelDodgeTorque.setX(source->lastRelDodgeTorque_x);
-			target.lastRelDodgeTorque.setY(source->lastRelDodgeTorque_y);
-			target.lastRelDodgeTorque.setZ(source->lastRelDodgeTorque_z);
+			target.lastRelDodgeTorque = source->lastRelDodgeTorque;
 			target.jumpTimer = source->jumpTimer;
 			target.flipTimer = source->flipTimer;
 			target.isJumping = source->isJumping;
 			target.airTimeSinceJump = source->airTimeSinceJump;
 			target.boost = source->boost;
+			target.timeSpentBoosting = source->timeSpentBoosting;
 			target.isSupersonic = source->isSupersonic;
 			target.handbrakeVal = source->handbrakeVal;
+			target.isAutoFlipping = source->isAutoFlipping;
+			target.autoFlipTimer = source->autoFlipTimer;
+			target.autoFlipTorqueScale = source->autoFlipTorqueScale;
+			target.worldContact.hasContact = source->hasContact;
+			target.worldContact.contactNormal = source->contactNormal;
 			car->SetState(target);
 			return true;
 		}
@@ -158,15 +151,9 @@ extern "C" {
 				return false;
 			}
 			auto ballstate = ball->GetState();
-			target->pos_x = ballstate.pos.x();
-			target->pos_y = ballstate.pos.y();
-			target->pos_z = ballstate.pos.z();
-			target->vel_x = ballstate.vel.x();
-			target->vel_y = ballstate.vel.y();
-			target->vel_z = ballstate.vel.z();
-			target->angVel_x = ballstate.angVel.x();
-			target->angVel_y = ballstate.angVel.y();
-			target->angVel_z = ballstate.angVel.z();
+			target->pos = ballstate.pos;
+			target->vel = ballstate.vel;
+			target->angVel = ballstate.angVel;
 			return true;
 		}
 
@@ -179,15 +166,9 @@ extern "C" {
 				return false;
 			}
 			auto target = ball->GetState();
-			target.pos.setX(source->pos_x);
-			target.pos.setY(source->pos_y);
-			target.pos.setZ(source->pos_z);
-			target.vel.setX(source->vel_x);
-			target.vel.setY(source->vel_y);
-			target.vel.setZ(source->vel_z);
-			target.angVel.setX(source->angVel_x);
-			target.angVel.setY(source->angVel_y);
-			target.angVel.setZ(source->angVel_z);
+			target.pos = source->pos;
+			target.vel = source->vel;
+			target.angVel = source->angVel;
 			ball->SetState(target);
 			return true;
 		}

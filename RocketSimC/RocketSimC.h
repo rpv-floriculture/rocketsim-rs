@@ -20,18 +20,20 @@ extern "C" {
 		uint32_t id;
 
 		// Position in world space
-		float pos_x, pos_y, pos_z;
-		float yaw, pitch, roll;
+		btVector3 pos;
+
+		// Rotation
+		btMatrix3x3 rot;
 
 		// Linear velocity
-		float vel_x, vel_y, vel_z;
+		btVector3 vel;
 
 		// Angular velocity (axis-angle)
-		float angVel_x, angVel_y, angVel_z;
+		btVector3 angVel;
 
 		bool isOnGround;
 		bool hasJumped, hasDoubleJumped, hasFlipped; 
-		float lastRelDodgeTorque_x, lastRelDodgeTorque_y, lastRelDodgeTorque_z;
+		btVector3 lastRelDodgeTorque;
 
 		// Active during a jump or flip
 		float jumpTimer, flipTimer;
@@ -45,22 +47,36 @@ extern "C" {
 		// Goes from 0 to 100
 		float boost;
 
+		// Added to replicate minimum boosting time
+		// NOTE: Will be used even when we have no boost
+		float timeSpentBoosting;
+
 		// This is a state variable due to the supersonic maintain time (see RLConst.h)
 		bool isSupersonic;
 
+		// Time spent supersonic, for checking with the supersonic maintain time (see RLConst.h)
+		float supersonicTime;
+
 		// This is a state variable due to the rise/fall rate of handbrake inputs (see RLConst.h)
 		float handbrakeVal;
+
+		bool isAutoFlipping;
+		float autoFlipTimer; // Counts down when auto-flipping
+		float autoFlipTorqueScale;
+
+		bool hasContact;
+		btVector3 contactNormal;
 	} CarStateSnapshot;
 
 	EXPORT typedef struct BallStateSnapshot {
 		// Position in world space
-		float pos_x, pos_y, pos_z;
+		btVector3 pos;
 
 		// Linear velocity
-		float vel_x, vel_y, vel_z;
+		btVector3 vel;
 
 		// Angular velocity (axis-angle)
-		float angVel_x, angVel_y, angVel_z;
+		btVector3 angVel;
 	} BallStateSnapshot;
 
 	//typedef void* Arena;

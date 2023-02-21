@@ -1,39 +1,35 @@
-use vector3::Vector3;
+use glam::{Mat3, Vec3};
 
 use super::Team;
-
 
 #[repr(C)]
 #[derive(Clone, Debug, Default)]
 pub struct CarState {
     pub team: Team,
     pub id: u32,
-    pub pos_x: f32,
-    pub pos_y: f32,
-    pub pos_z: f32,
-    pub yaw: f32,
-    pub pitch: f32,
-    pub roll: f32,
-    pub vel_x: f32,
-    pub vel_y: f32,
-    pub vel_z: f32,
-    pub ang_vel_x: f32,
-    pub ang_vel_y: f32,
-    pub ang_vel_z: f32,
+    pub pos: Vec3,
+    pub rot: Mat3,
+    pub vel: Vec3,
+    pub ang_vel: Vec3,
     pub is_on_ground: bool,
     pub has_jumped: bool,
     pub has_double_jumped: bool,
     pub has_flipped: bool,
-    pub last_rel_dodge_torque_x: f32,
-    pub last_rel_dodge_torque_y: f32,
-    pub last_rel_dodge_torque_z: f32,
+    pub last_rel_dodge_torque: Vec3,
     pub jump_timer: f32,
     pub flip_timer: f32,
     pub is_jumping: bool,
     pub air_time_since_jump: f32,
     pub boost: f32,
+    pub time_spent_boosting: f32,
     pub is_supersonic: bool,
+    pub supersonic_time: f32,
     pub handbrake_val: f32,
+    pub is_auto_flipping: bool,
+    pub auto_flip_timer: f32,
+    pub auto_flip_torque_scale: f32,
+    pub has_contact: bool,
+    pub contact_normal: Vec3,
 }
 
 impl CarState {
@@ -41,26 +37,6 @@ impl CarState {
         let mut car_state = Self::default();
         car_state.team = team;
         car_state
-    }
-
-    pub fn get_pos(&self) -> Vector3 {
-        Vector3::new(self.pos_x.into(), self.pos_y.into(), self.pos_z.into())
-    }
-
-    pub fn get_rot(&self) -> Vector3 {
-        Vector3::new(self.yaw.into(), self.pitch.into(), self.roll.into())
-    }
-
-    pub fn get_vel(&self) -> Vector3 {
-        Vector3::new(self.vel_x.into(), self.vel_y.into(), self.vel_z.into())
-    }
-
-    pub fn get_ang_vel(&self) -> Vector3 {
-        Vector3::new(self.ang_vel_x.into(), self.ang_vel_y.into(), self.ang_vel_z.into())
-    }
-
-    pub fn get_last_rel_dodge_torque(&self) -> Vector3 {
-        Vector3::new(self.last_rel_dodge_torque_x.into(), self.last_rel_dodge_torque_y.into(), self.last_rel_dodge_torque_z.into())
     }
 }
 
@@ -80,91 +56,17 @@ impl CarStateBuilder {
         self
     }
 
-    pub fn with_pos(mut self, pos: Vector3) -> Self {
-        self.car_state.pos_x = pos.x as f32;
-        self.car_state.pos_y = pos.y as f32;
-        self.car_state.pos_z = pos.z as f32;
+    pub fn with_pos(mut self, pos: Vec3) -> Self {
+        self.car_state.pos = pos;
+        self
+    }
+    pub fn with_vel(mut self, vel: Vec3) -> Self {
+        self.car_state.vel = vel;
         self
     }
 
-    pub fn with_pos_x(mut self, pos_x: f32) -> Self {
-        self.car_state.pos_x = pos_x;
-        self
-    }
-
-    pub fn with_pos_y(mut self, pos_y: f32) -> Self {
-        self.car_state.pos_y = pos_y;
-        self
-    }
-
-    pub fn with_pos_z(mut self, pos_z: f32) -> Self {
-        self.car_state.pos_z = pos_z;
-        self
-    }
-
-    pub fn with_rot(mut self, rot: Vector3) -> Self {
-        self.car_state.yaw = rot.x as f32;
-        self.car_state.pitch = rot.y as f32;
-        self.car_state.roll = rot.z as f32;
-        self
-    }
-
-    pub fn with_yaw(mut self, yaw: f32) -> Self {
-        self.car_state.yaw = yaw;
-        self
-    }
-
-    pub fn with_pitch(mut self, pitch: f32) -> Self {
-        self.car_state.pitch = pitch;
-        self
-    }
-
-    pub fn with_roll(mut self, roll: f32) -> Self {
-        self.car_state.roll = roll;
-        self
-    }
-
-    pub fn with_vel(mut self, vel: Vector3) -> Self {
-        self.car_state.vel_x = vel.x as f32;
-        self.car_state.vel_y = vel.y as f32;
-        self.car_state.vel_z = vel.z as f32;
-        self
-    }
-
-    pub fn with_vel_x(mut self, vel_x: f32) -> Self {
-        self.car_state.vel_x = vel_x;
-        self
-    }
-
-    pub fn with_vel_y(mut self, vel_y: f32) -> Self {
-        self.car_state.vel_y = vel_y;
-        self
-    }
-
-    pub fn with_vel_z(mut self, vel_z: f32) -> Self {
-        self.car_state.vel_z = vel_z;
-        self
-    }
-
-    pub fn with_ang_vel(mut self, ang_vel: Vector3) -> Self {
-        self.car_state.ang_vel_x = ang_vel.x as f32;
-        self.car_state.ang_vel_y = ang_vel.y as f32;
-        self.car_state.ang_vel_z = ang_vel.z as f32;
-        self
-    }
-
-    pub fn with_ang_vel_x(mut self, ang_vel_x: f32) -> Self {
-        self.car_state.ang_vel_x = ang_vel_x;
-        self
-    }
-
-    pub fn with_ang_vel_y(mut self, ang_vel_y: f32) -> Self {
-        self.car_state.ang_vel_y = ang_vel_y;
-        self
-    }
-
-    pub fn with_ang_vel_z(mut self, ang_vel_z: f32) -> Self {
-        self.car_state.ang_vel_z = ang_vel_z;
+    pub fn with_ang_vel(mut self, ang_vel: Vec3) -> Self {
+        self.car_state.ang_vel = ang_vel;
         self
     }
 
@@ -188,25 +90,8 @@ impl CarStateBuilder {
         self
     }
 
-    pub fn with_last_rel_dodge_torque(mut self, last_rel_dodge_torque: Vector3) -> Self {
-        self.car_state.last_rel_dodge_torque_x = last_rel_dodge_torque.x as f32;
-        self.car_state.last_rel_dodge_torque_y = last_rel_dodge_torque.y as f32;
-        self.car_state.last_rel_dodge_torque_z = last_rel_dodge_torque.z as f32;
-        self
-    }
-
-    pub fn with_last_rel_dodge_torque_x(mut self, last_rel_dodge_torque_x: f32) -> Self {
-        self.car_state.last_rel_dodge_torque_x = last_rel_dodge_torque_x;
-        self
-    }
-
-    pub fn with_last_rel_dodge_torque_y(mut self, last_rel_dodge_torque_y: f32) -> Self {
-        self.car_state.last_rel_dodge_torque_y = last_rel_dodge_torque_y;
-        self
-    }
-
-    pub fn with_last_rel_dodge_torque_z(mut self, last_rel_dodge_torque_z: f32) -> Self {
-        self.car_state.last_rel_dodge_torque_z = last_rel_dodge_torque_z;
+    pub fn with_last_rel_dodge_torque(mut self, last_rel_dodge_torque: Vec3) -> Self {
+        self.car_state.last_rel_dodge_torque = last_rel_dodge_torque;
         self
     }
 
