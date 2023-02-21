@@ -19,6 +19,9 @@ fn main() -> Result<()> {
     }
 
     build
+        .define("BT_USE_SSE", None)
+        .define("BT_USE_SSE_IN_API", None)
+        .define("BT_USE_SIMD_VECTOR3", None)
         .files(
             glob("RocketSim/libsrc/**/*All.cpp")
                 .into_diagnostic()?
