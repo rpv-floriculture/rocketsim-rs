@@ -1,5 +1,3 @@
-use std::env;
-
 fn main() {
     let mut build = cc::Build::new();
 
@@ -11,19 +9,13 @@ fn main() {
         .use_plt(false)
         .flag("-ffast-math");
 
-    match env::var("PROFILE").unwrap().as_str() {
-        "release" => {
-            build.flag("-flto=thin");
-        }
-        _ => (),
+    if cfg!(feature = "fat-lto") {
+        build.flag("-flto=full");
+    } else if cfg!(feature = "lto") {
+        build.flag("-flto=thin");
     }
-    println!("cargo:rerun-if-env-changed=PROFILE");
 
     build
-        // .define("BT_USE_SSE", None)
-        // .define("BT_USE_SSE_IN_API", None)
-        // .define("BT_USE_SIMD_VECTOR3", None)
-        // .flag("--include=xmmintrin.h")
         .file("RocketSim/libsrc/bullet3-3.24/btBulletCollisionAll.cpp")
         .file("RocketSim/libsrc/bullet3-3.24/btBulletDynamicsAll.cpp")
         .file("RocketSim/libsrc/bullet3-3.24/btLinearMathAll.cpp")
