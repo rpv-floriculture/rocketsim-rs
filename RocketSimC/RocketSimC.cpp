@@ -82,7 +82,7 @@ extern "C" {
 			target->team = car->team;
 			target->id = car->id;
 			target->pos = carState.pos;
-			target->rot = carState.rot;
+			target->rot = carState.rot.transpose();
 			target->vel = carState.vel;
 			target->angVel = carState.angVel;
 			target->isOnGround = carState.isOnGround;
@@ -117,7 +117,7 @@ extern "C" {
 			}
 			auto target = car->GetState();
 			target.pos = source->pos;
-			target.rot = source->rot;
+			target.rot = source->rot.transpose();
 			target.vel = source->vel;
 			target.angVel = source->angVel;
 			target.isOnGround = source->isOnGround;
