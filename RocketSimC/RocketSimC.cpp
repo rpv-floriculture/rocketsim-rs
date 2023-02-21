@@ -82,7 +82,7 @@ extern "C" {
 			target->team = car->team;
 			target->id = car->id;
 			target->pos = carState.pos;
-			target->rot = carState.angles.ToMatrix();
+			target->rot = carState.rot;
 			target->vel = carState.vel;
 			target->angVel = carState.angVel;
 			target->isOnGround = carState.isOnGround;
@@ -117,7 +117,7 @@ extern "C" {
 			}
 			auto target = car->GetState();
 			target.pos = source->pos;
-			target.angles = Angle(source->rot);
+			target.rot = source->rot;
 			target.vel = source->vel;
 			target.angVel = source->angVel;
 			target.isOnGround = source->isOnGround;
