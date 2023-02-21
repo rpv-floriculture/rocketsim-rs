@@ -1,4 +1,7 @@
-fn main() {
+use glob::glob;
+use miette::{IntoDiagnostic, Result};
+
+fn main() -> Result<()> {
     let mut build = cc::Build::new();
 
     build
@@ -16,19 +19,15 @@ fn main() {
     }
 
     build
-        .file("RocketSim/libsrc/bullet3-3.24/btBulletCollisionAll.cpp")
-        .file("RocketSim/libsrc/bullet3-3.24/btBulletDynamicsAll.cpp")
-        .file("RocketSim/libsrc/bullet3-3.24/btLinearMathAll.cpp")
-        .file("RocketSim/src/BulletLink.cpp")
-        .file("RocketSim/src/Math/Math.cpp")
-        .file("RocketSim/src/Sim/Arena/Arena.cpp")
-        .file("RocketSim/src/Sim/Ball/Ball.cpp")
-        .file("RocketSim/src/Sim/BoostPad/BoostPad.cpp")
-        .file("RocketSim/src/Sim/btVehicleRL/btVehicleRL.cpp")
-        .file("RocketSim/src/Sim/Car/Car.cpp")
-        .file("RocketSim/src/Sim/Car/CarConfig/CarConfig.cpp")
-        .file("RocketSim/src/Sim/MeshLoader/MeshLoader.cpp")
+        .files(
+            glob("RocketSim/libsrc/**/*All.cpp")
+                .into_diagnostic()?
+                .flatten(),
+        )
+        .files(glob("RocketSim/src/**/*.cpp").into_diagnostic()?.flatten())
         .include("RocketSim/src")
         .file("RocketSimC/RocketSimC.cpp")
         .compile("RocketSimC");
+
+    Ok(())
 }

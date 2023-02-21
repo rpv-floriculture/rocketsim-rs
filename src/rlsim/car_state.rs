@@ -1,4 +1,4 @@
-use glam::{Mat3, Vec3};
+use glam::{Mat3A, Vec3A};
 
 use super::Team;
 
@@ -7,15 +7,15 @@ use super::Team;
 pub struct CarState {
     pub team: Team,
     pub id: u32,
-    pub pos: Vec3,
-    pub rot: Mat3,
-    pub vel: Vec3,
-    pub ang_vel: Vec3,
+    pub pos: Vec3A,
+    pub rot: Mat3A,
+    pub vel: Vec3A,
+    pub ang_vel: Vec3A,
     pub is_on_ground: bool,
     pub has_jumped: bool,
     pub has_double_jumped: bool,
     pub has_flipped: bool,
-    pub last_rel_dodge_torque: Vec3,
+    pub last_rel_dodge_torque: Vec3A,
     pub jump_timer: f32,
     pub flip_timer: f32,
     pub is_jumping: bool,
@@ -29,7 +29,7 @@ pub struct CarState {
     pub auto_flip_timer: f32,
     pub auto_flip_torque_scale: f32,
     pub has_contact: bool,
-    pub contact_normal: Vec3,
+    pub contact_normal: Vec3A,
 }
 
 impl CarState {
@@ -56,16 +56,16 @@ impl CarStateBuilder {
         self
     }
 
-    pub fn with_pos(mut self, pos: Vec3) -> Self {
+    pub fn with_pos(mut self, pos: Vec3A) -> Self {
         self.car_state.pos = pos;
         self
     }
-    pub fn with_vel(mut self, vel: Vec3) -> Self {
+    pub fn with_vel(mut self, vel: Vec3A) -> Self {
         self.car_state.vel = vel;
         self
     }
 
-    pub fn with_ang_vel(mut self, ang_vel: Vec3) -> Self {
+    pub fn with_ang_vel(mut self, ang_vel: Vec3A) -> Self {
         self.car_state.ang_vel = ang_vel;
         self
     }
@@ -90,7 +90,7 @@ impl CarStateBuilder {
         self
     }
 
-    pub fn with_last_rel_dodge_torque(mut self, last_rel_dodge_torque: Vec3) -> Self {
+    pub fn with_last_rel_dodge_torque(mut self, last_rel_dodge_torque: Vec3A) -> Self {
         self.car_state.last_rel_dodge_torque = last_rel_dodge_torque;
         self
     }

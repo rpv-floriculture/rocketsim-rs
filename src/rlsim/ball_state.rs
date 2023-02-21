@@ -1,11 +1,11 @@
-use glam::Vec3;
+use glam::Vec3A;
 
 #[repr(C)]
 #[derive(Clone, Debug, Default)]
 pub struct BallState {
-    pub pos: Vec3,
-    pub vel: Vec3,
-    pub ang_vel: Vec3,
+    pub pos: Vec3A,
+    pub vel: Vec3A,
+    pub ang_vel: Vec3A,
 }
 
 impl BallState {
