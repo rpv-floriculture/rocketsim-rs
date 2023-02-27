@@ -90,8 +90,8 @@ extern "C" {
 			target->hasDoubleJumped = carState.hasDoubleJumped;
 			target->hasFlipped = carState.hasFlipped;
 			target->lastRelDodgeTorque = carState.lastRelDodgeTorque;
-			target->jumpTimer = carState.jumpTimer;
-			target->flipTimer = carState.flipTimer;
+			target->jumpTimer = carState.jumpTime;
+			target->flipTimer = carState.flipTime;
 			target->isJumping = carState.isJumping;
 			target->airTimeSinceJump = carState.airTimeSinceJump;
 			target->boost = carState.boost;
@@ -125,8 +125,8 @@ extern "C" {
 			target.hasDoubleJumped = source->hasDoubleJumped;
 			target.hasFlipped = source->hasFlipped;
 			target.lastRelDodgeTorque = source->lastRelDodgeTorque;
-			target.jumpTimer = source->jumpTimer;
-			target.flipTimer = source->flipTimer;
+			target.jumpTime = source->jumpTimer;
+			target.flipTime = source->flipTimer;
 			target.isJumping = source->isJumping;
 			target.airTimeSinceJump = source->airTimeSinceJump;
 			target.boost = source->boost;
